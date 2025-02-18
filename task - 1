@@ -1,0 +1,119 @@
+import json
+
+students = [
+    {"Name": "Alex", "Height": 202, "Gender": "M"},
+    {"Name": "Anton", "Height": 195, "Gender": "M"},
+    {"Name": "Vasiliy", "Height": 194, "Gender": "M"},
+    {"Name": "Dmytro", "Height": 191, "Gender": "M"},
+    {"Name": "Maksym", "Height": 190, "Gender": "M"},
+    {"Name": "Alina", "Height": 188, "Gender": "F"},
+    {"Name": "Anna", "Height": 185, "Gender": "F"},
+    {"Name": "Elena", "Height": 178, "Gender": "F"},
+    {"Name": "Victoria", "Height": 173, "Gender": "F"},
+    {"Name": "Maria", "Height": 165, "Gender": "F"},
+]
+
+with open("data.json", "w") as file:
+    json.dump(students, file, indent=4)
+
+def load_students():
+    try:
+        with open("data.json", "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+def save_students(students):
+    with open("data.json", "w") as file:
+        json.dump(students, file, indent=4)
+
+def view_students():
+    students = load_students()
+    print("\nВміст файлу:")
+    for student in students:
+        print(student)
+
+def add_student():
+    name = input("Введіть ім'я учня: ").strip()
+    
+    while True:
+        try:
+            height = int(input("Введіть зріст учня: "))
+            break
+        except ValueError:
+            print("Помилка! Зріст повинен бути числом.")
+    
+    while True:
+        gender = input("Введіть стать учня (M/F): ").strip().upper()
+        if gender in ("M", "F"):
+            break
+        else:
+            print("Помилка вводу! Використовуйте лише 'M' або 'F'.")
+    
+    students = load_students()
+    students.append({"Name": name, "Height": height, "Gender": gender})
+    save_students(students)
+    print("Новий учень доданий!")
+
+def delete_student():
+    name = input("Введіть ім'я учня, якого хочете видалити: ").strip()
+    students = load_students()
+    
+    new_students = [s for s in students if s["Name"] != name]
+    
+    if len(new_students) == len(students):
+        print("Ученя з таким ім'ям не знайдено!")
+    else:
+        save_students(new_students)
+        print("Учня видалено!")
+
+def find_tall_students():
+    students = load_students()
+    more_190 = [s for s in students if s["Height"] > 190]
+
+    if more_190:
+        print("\nУчні вище 190см:")
+        for s in more_190:
+            print(s)
+    else:
+        print("Немає учнів, чий зріст перевищує 190см!")
+
+def compare_heights():
+    students = load_students()
+
+    total_men_height = sum(s["Height"] for s in students if s["Gender"] == "M")
+    total_women_height = sum(s["Height"] for s in students if s["Gender"] == "F")
+
+    if total_women_height > total_men_height:
+        print(f"Зріст дівчат більше зросту хлопців на {total_women_height - total_men_height} см!")
+    else:
+        print(f"Зріст дівчат менше зросту хлопців на {total_men_height - total_women_height} см!")
+
+def main():
+    while True:
+        try:
+            print("\nВиберіть один з варіантів:\n 1 - Перегляд вмісту файлу\n 2 - Додати новий запис у файл\n 3 - Видалити запис з файлу\n 4 - Знайти учнів які мають зріст більше 190см \n 5 - Визначити, чи перевищує сумарний зріст дівчат у класі зріст хлопців\n 6 - Вихід з програми\n\n")
+            x=input("Ваш варіант:\n")
+            x=int(x)
+            
+            if x == 1:
+                view_students()
+            elif x == 2:
+                add_student()
+            elif x == 3:
+                delete_student()
+            elif x == 4:
+                find_tall_students()
+            elif x == 5:
+                compare_heights()
+            elif x == 6:
+                print("Програма завершила свою роботу!")
+                break
+            else:
+                print("Помилка! Введіть число від 1 до 6.")
+
+        except ValueError:
+            print("Помилка! Введіть коректне ціле число.")
+
+if __name__ == "__main__":
+    main()
